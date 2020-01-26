@@ -1,5 +1,5 @@
 # Backup Minecraft
-Script PowerShell to backup Minecraft instance of MultiMC with use of pre-launch/post-stopped command.
+Script PowerShell to backup Minecraft instance of MultiMC with use of pre-launch/post-stop command.
 
 # Detailed
 ## SYNOPSIS
