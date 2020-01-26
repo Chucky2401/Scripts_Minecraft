@@ -26,11 +26,11 @@ param(
     Logs                    - Exemple: D:\Jeux\Backup\Logs\nomDeLInstance_2020.01.25_18.56.log
 
 .NOTES
-    Version:                1.2
+    Version:                1.2.1
     Auteur:                 Chucky2401
     Date Création:          25 Janvier 2020
     Dernière modification:  26 Janvier 2020
-    Changement:             Meilleur log - Mode Test - Message/Log de DEBUG
+    Changement:             Filtrage sur le nom de l'instance lors de la suppression
 
 .EXAMPLE
     .\backup.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC
@@ -290,15 +290,15 @@ If (-not($bTest)) {
 
     If ($bDebug) {
         ShowMessage "DEBUG" "Suppression anciennes archives (Get-ChildItem) :"
-        ShowMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force"
+        ShowMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force"
         Write-Host ""
 
         LogMessage "DEBUG" "Suppression ancienne archive (Get-ChildItem) :" $($sLogFile)
-        LogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force" $($sLogFile)
+        LogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force" $($sLogFile)
         Write-Output "" >> $($sLogFile)
     }
 
-    Get-ChildItem $sBackupPath | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $iKeep | Remove-Item -Force
+    Get-ChildItem $sBackupPath | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $iKeep | Remove-Item -Force
     
     If ($?) {
         ShowMessage "SUCCESS" "Suppression des anciens fichiers réussi !"
@@ -319,15 +319,15 @@ If (-not($bTest)) {
 
     If ($bDebug) {
         ShowMessage "DEBUG" "Suppression anciens logs (Get-ChildItem) :"
-        ShowMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force"
+        ShowMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force"
         Write-Host ""
 
         LogMessage "DEBUG" "Suppression anciens logs (Get-ChildItem) :" $($sLogFile)
-        LogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force" $($sLogFile)
+        LogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force" $($sLogFile)
         Write-Output "" >> $($sLogFile)
     }
 
-    Get-ChildItem $sLogPath | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $iKeep | Remove-Item -Force
+    Get-ChildItem $sLogPath | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $iKeep | Remove-Item -Force
 
     If ($?) {
         ShowMessage "SUCCESS" "Suppression des anciens logs réussi !"
