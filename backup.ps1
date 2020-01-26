@@ -22,8 +22,8 @@ param(
     N/A
 
 .OUTPUTS
-    Archive de l'instance   - Example: D:\Jeux\Backup\nomDeLInstance_2020.01.25.7z
-    Logs                    - Exemple: D:\Jeux\Backup\Logs\nomDeLInstance_2020.01.25.log
+    Archive de l'instance   - Example: D:\Jeux\Backup\nomDeLInstance_2020.01.25_18.00.7z
+    Logs                    - Exemple: D:\Jeux\Backup\Logs\nomDeLInstance_2020.01.25_18.56.log
 
 .NOTES
     Version:                1.2

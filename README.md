@@ -6,24 +6,24 @@ Script PowerShell to backup Minecraft instance of MultiMC with use of pre-launch
     Sauvegarde de l'instances Minecraft
 
 ## PARAMETERS
-### PARAMETER <sNomDeLInstance>
+### sNomDeLInstance
     Nom de l'instance à sauvegarde pour le nom de l'archive
 
-### PARAMETER <sCheminDeLInstance>
+### sCheminDeLInstance
     Chemin vers le dossier de l'instance
 
-### PARAMETER <bDebug>
+### bDebug
     Booléen pour afficher les messages de DEBUG
 
-### PARAMETER <bTest>
+### bTest
     Si on lance en mode test (rien n'est fait)
 
 ## INPUTS
     N/A
 
 ## OUTPUTS
-    Archive de l'instance   - Example: D:\Jeux\Backup\nomDeLInstance_2020.01.25.7z
-    Logs                    - Exemple: D:\Jeux\Backup\Logs\nomDeLInstance_2020.01.25.log
+    Archive de l'instance   - Example: D:\Jeux\Backup\nomDeLInstance_2020.01.25_18.00.7z
+    Logs                    - Exemple: D:\Jeux\Backup\Logs\nomDeLInstance_2020.01.25_18.56.log
 
 ## NOTES
     Version:                1.2
