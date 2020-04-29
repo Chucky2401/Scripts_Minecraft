@@ -26,11 +26,11 @@ param(
     Logs                    - Exemple: D:\Jeux\Backup\Logs\nomDeLInstance_2020.01.25_18.56.log
 
 .NOTES
-    Version:                1.2.1
+    Version:                1.3.1
     Auteur:                 Chucky2401
     Date Création:          25 Janvier 2020
-    Dernière modification:  26 Janvier 2020
-    Changement:             Filtrage sur le nom de l'instance lors de la suppression
+    Dernière modification:  15 Avril 2020
+    Changement:             Correction suppression anciennes sauvegardes qui supprimé tout...
 
 .EXAMPLE
     .\backup.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC
@@ -39,7 +39,9 @@ param(
 #---------------------------------------------------------[Initialisations]--------------------------------------------------------
 
 #Set Error Action to Silently Continue
-$ErrorActionPreference = "SilentlyContinue"
+If (-not($bDebug)) {
+    $ErrorActionPreference = "SilentlyContinue"
+}
 
 #Windows ISO
 $sCheminDeLInstance = $sCheminDeLInstance -replace '/', '\'
@@ -52,7 +54,8 @@ $sBackupPath           = "D:\Utilisateurs\TheBlackWizard\Jeux\Backup\Minecraft"
 #Dossier du log
 $sLogPath              = "D:\Utilisateurs\TheBlackWizard\Jeux\Backup\Minecraft\Logs"
 #Nombre de sauvegarde à conserver
-$iKeep                 = 14
+$iKeep                 = -14
+$dMaxKeep              = $(Get-Date).AddDays($iKeep)
 #Taux de compression
 #Valeurs possibles : Aucune / Plus rapide / Rapide / Normal / Maximum / Ultra
 $sTauxCompression      = "Ultra"
@@ -196,6 +199,8 @@ Function MergeLogFile {
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
 
+If ($bDebug) { cls }
+
 #En-tête
 Write-Host "****************************************"
 Write-Host "*                                      *"
@@ -213,7 +218,7 @@ ShowMessage "INFO" "Taux de compression      : $($sTauxCompression) ($($iTauxCom
 ShowMessage "INFO" "Chemin des logs          : $($sLogPath)"
 ShowMessage "INFO" "Nom du log               : $($sLogName)"
 ShowMessage "INFO" "Nom du log 7z            : $($sLog7zName)"
-ShowMessage "INFO" "Nombre de sauvegarde max : $($iKeep)"
+ShowMessage "INFO" "Nombre de sauvegarde max : $([math]::abs($iKeep))"
 Write-Host ""
 
 Write-Output "****************************************" > $sLogFile
@@ -232,7 +237,7 @@ LogMessage "INFO" "Taux de compression      : $($sTauxCompression) ($($iTauxComp
 LogMessage "INFO" "Chemin des logs          : $($sLogPath)" $($sLogFile)
 LogMessage "INFO" "Nom du log               : $($sLogName)" $($sLogFile)
 LogMessage "INFO" "Nom du log 7z            : $($sLog7zName)" $($sLogFile)
-LogMessage "INFO" "Nombre de sauvegarde max : $($iKeep)" $($sLogFile)
+LogMessage "INFO" "Nombre de sauvegarde max : $([math]::abs($iKeep))" $($sLogFile)
 Write-Output "" >> $sLogFile
 
 #Archivage du dossier
@@ -284,21 +289,22 @@ If (-not($bTest)) {
 #Suppression des fichiers plus vieux...
 #... et des logs !
 If (-not($bTest)) {
-    #gci | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip 1 | ft Name, LastWriteTime, PsIsContainer -AutoSize
     ShowMessage "INFO" "Suppression des anciens fichiers..."
     LogMessage "INFO" "Suppression des anciens fichiers..." $($sLogFile)
 
     If ($bDebug) {
         ShowMessage "DEBUG" "Suppression anciennes archives (Get-ChildItem) :"
-        ShowMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force"
+        #ShowMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force"
+        ShowMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"
         Write-Host ""
 
         LogMessage "DEBUG" "Suppression ancienne archive (Get-ChildItem) :" $($sLogFile)
-        LogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force" $($sLogFile)
+        #LogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force" $($sLogFile)
+        LogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"
         Write-Output "" >> $($sLogFile)
     }
 
-    Get-ChildItem $sBackupPath | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $iKeep | Remove-Item -Force
+    Get-ChildItem $sBackupPath | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force
     
     If ($?) {
         ShowMessage "SUCCESS" "Suppression des anciens fichiers réussi !"
@@ -319,15 +325,15 @@ If (-not($bTest)) {
 
     If ($bDebug) {
         ShowMessage "DEBUG" "Suppression anciens logs (Get-ChildItem) :"
-        ShowMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force"
+        ShowMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"
         Write-Host ""
 
         LogMessage "DEBUG" "Suppression anciens logs (Get-ChildItem) :" $($sLogFile)
-        LogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force" $($sLogFile)
+        LogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force" $($sLogFile)
         Write-Output "" >> $($sLogFile)
     }
 
-    Get-ChildItem $sLogPath | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance)} | Sort LastWriteTime -Descending | Select -Skip $iKeep | Remove-Item -Force
+    Get-ChildItem $sLogPath | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force
 
     If ($?) {
         ShowMessage "SUCCESS" "Suppression des anciens logs réussi !"
@@ -344,15 +350,15 @@ If (-not($bTest)) {
     }
 } Else {
     ShowMessage "DEBUG" "Suppression anciennes archives (Get-ChildItem) :"
-    ShowMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force"
+    ShowMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"
     ShowMessage "DEBUG" "Suppression anciens logs (Get-ChildItem) :"
-    ShowMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force"
+    ShowMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"
     Write-Host ""
 
     LogMessage "DEBUG" "Suppression anciennes archives (Get-ChildItem) :" $($sLogFile)
-    LogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force" $($sLogFile)
+    LogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"
     LogMessage "DEBUG" "Suppression anciens logs (Get-ChildItem) :" $($sLogFile)
-    LogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer} | Sort LastWriteTime -Descending | Select -Skip $($iKeep) | Remove-Item -Force" $($sLogFile)
+    LogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($sNomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"
     Write-Output "" >> $($sLogFile)
 }
 
