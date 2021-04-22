@@ -1,36 +1,43 @@
 # Backup Minecraft
-Script PowerShell to backup Minecraft instance of MultiMC with use of pre-launch/post-stop command.
 
-# Detailed
-## SYNOPSIS
-    Sauvegarde de l'instances Minecraft
+Script PowerShell to backup Minecraft instance of MultiMC with use of post-stop command.
 
-## PARAMETERS
-### sNomDeLInstance
-    Nom de l'instance à sauvegarde pour le nom de l'archive
+## Detailed
+    .SYNOPSIS
+        Backup Minecraft instance
+    .DESCRIPTION
+        This script backup a Minecraft instance in a 7z archive
+    .PARAMETER NomDeLInstance
+        Instance name. Used for the archive name, too
+    .PARAMETER CheminDeLInstance
+        Instance path
+    .PARAMETER Verbeux
+        Switch, enable verbose message
+    .PARAMETER Test
+        Switch, test mode (nothing do)
+    .NOTES
+        Nom            : Backup-Minecraft
+        Version        : 1.4
+        Créé par       : Chucky2401
+        Date Création  : 25/01/2020
+        Modifié par    : Chucky2401
+        Date modifié   : 22/04/2021
+        Changement     : Template and update functions
+    .EXAMPLE
+        .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC
+        
+        Backup instance 'GoC_Multi' from 'F:\Games\Minecraft\MultiMC\instances\GoC'
+    .EXAMPLE
+        .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC -Verbeux
 
-### sCheminDeLInstance
-    Chemin vers le dossier de l'instance
+        Backup instance 'GoC_Multi' from 'F:\Games\Minecraft\MultiMC\instances\GoC' and display debug message
+    .EXAMPLE
+        .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC -Test
 
-### bDebug
-    Booléen pour afficher les messages de DEBUG
+        Backup instance 'GoC_Multi' from 'F:\Games\Minecraft\MultiMC\instances\GoC' in test mode.
+        /!\ No backup file will be created and log file will be named 'TEST.log'
+    .EXAMPLE
+        .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC -Test -Verbeux
 
-### bTest
-    Si on lance en mode test (rien n'est fait)
-
-## INPUTS
-    N/A
-
-## OUTPUTS
-    Archive de l'instance   - Example: D:\Jeux\Backup\nomDeLInstance_2020.01.25_18.00.7z
-    Logs                    - Exemple: D:\Jeux\Backup\Logs\nomDeLInstance_2020.01.25_18.56.log
-
-## NOTES
-    Version:                1.2
-    Auteur:                 Chucky2401
-    Date Création:          25 Janvier 2020
-    Dernière modification:  26 Janvier 2020
-    Changement:             Meilleur log - Mode Test - Message/Log de DEBUG
-
-## EXAMPLE
-    .\backup.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC
+        Backup instance 'GoC_Multi' from 'F:\Games\Minecraft\MultiMC\instances\GoC' in test mode and display debug message
+        /!\ No backup file will be created, log file will be named 'TEST.log' and cmdlets use to backup will be displayed.
