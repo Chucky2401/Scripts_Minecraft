@@ -13,12 +13,12 @@
     Si on lance en mode test (rien n'est fait)
 .NOTES
     Nom            : Backup-Minecraft
-    Version        : 1.4
+    Version        : 1.4.1
     Créé par       : Chucky2401
     Date Création  : 25/01/2020
     Modifié par    : Chucky2401
     Date modifié   : 22/04/2021
-    Changement     : Modèle et fonctions mis à jour
+    Changement     : Modification de quelques messages
 .EXAMPLE
     .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC
     
@@ -468,21 +468,21 @@ function MergeLogFile {
 
 #----------------------------------------------------------[Declarations]----------------------------------------------------------
 
-## Variables Utilisateurs
+## Variables Utilisateur / User variables
 #####################################################
 ##                                                 ##
 ##     /!\ MODIFIER LES VALEURS CI-DESSOUS /!\     ##
+##         /!\ EDIT YOUR VARIABLES HERE /!\        ##
 ##                                                 ##
 #####################################################
-#Dossier de sauvegarde
+#Dossier de sauvegarde / Backup directory
 $sBackupPath           = "D:\Utilisateurs\TheBlackWizard\Jeux\Backup\Minecraft"
-#Dossier du log
+#Dossier du log / Log directory
 $sLogPath              = "D:\Utilisateurs\TheBlackWizard\Jeux\Backup\Minecraft\Logs"
-#Nombre de sauvegarde à conserver
-$iKeep                 = -14
-$dMaxKeep              = $(Get-Date).AddDays($iKeep)
-#Taux de compression
-#Valeurs possibles : Aucune / Plus rapide / Rapide / Normal / Maximum / Ultra
+#Nombre de sauvegarde à conserver / How many backup to keep
+$iKeep                 = 14
+#Taux de compression / Compression ratio
+#Valeurs possibles / Available values : Aucune (None) / Plus rapide (Faster) / Rapide (Fastest) / Normal (Normal) / Maximum (Best) / Ultra (Ultra)
 $sTauxCompression      = "Ultra"
 
 
@@ -490,8 +490,10 @@ $sTauxCompression      = "Ultra"
 ####################################################
 ##                                                ##
 ## /!\ NE PAS MODIFIER LES VALEURS CI-DESSOUS /!\ ##
+##            /!\ DO NOT EDIT BELOW /!\           ##
 ##                                                ##
 ####################################################
+$dMaxKeep              = $(Get-Date).AddDays(-$iKeep)
 #Date du jour
 $sDate                 = Get-Date -UFormat "%Y.%m.%d"
 $sHour                 = Get-Date -UFormat "%H"
@@ -539,16 +541,17 @@ Write-CenterText -sChaine "*                                      *" -sLogFile $
 Write-CenterText -sChaine "****************************************" -sLogFile $($sLogFile)
 ShowLogMessage "AUTRES" "" $($sLogFile)
 
-ShowLogMessage "INFO" "Nom de l'instance        : $($NomDeLInstance)" $($sLogFile)
-ShowLogMessage "INFO" "Chemin de l'instance     : $($CheminDeLInstance)" $($sLogFile)
-ShowLogMessage "INFO" "Dossier de Sauvegarde    : $($sBackupPath)" $($sLogFile)
-ShowLogMessage "INFO" "Nom de l'archive         : $($sArchiveName)" $($sLogFile)
-ShowLogMessage "INFO" "Taux de compression      : $($sTauxCompression) ($($iTauxCompression))" $($sLogFile)
-ShowLogMessage "INFO" "Chemin des logs          : $($sLogPath)" $($sLogFile)
-ShowLogMessage "INFO" "Nom du log               : $($sLogName)" $($sLogFile)
-ShowLogMessage "INFO" "Nom du log 7z            : $($sLog7zName)" $($sLogFile)
-ShowLogMessage "INFO" "Nombre de sauvegarde max : $([math]::abs($iKeep))" $($sLogFile)
-ShowLogMessage "AUTRES" $($sLogFile)
+ShowLogMessage "AUTRES" "Variables de la session en cours :" $($sLogFile)
+ShowLogMessage "AUTRES" "Nom de l'instance        : $($NomDeLInstance)" $($sLogFile)
+ShowLogMessage "AUTRES" "Chemin de l'instance     : $($CheminDeLInstance)" $($sLogFile)
+ShowLogMessage "AUTRES" "Dossier de Sauvegarde    : $($sBackupPath)" $($sLogFile)
+ShowLogMessage "AUTRES" "Nom de l'archive         : $($sArchiveName)" $($sLogFile)
+ShowLogMessage "AUTRES" "Taux de compression      : $($sTauxCompression) ($($iTauxCompression))" $($sLogFile)
+ShowLogMessage "AUTRES" "Chemin des logs          : $($sLogPath)" $($sLogFile)
+ShowLogMessage "AUTRES" "Nom du log               : $($sLogName)" $($sLogFile)
+ShowLogMessage "AUTRES" "Nom du log 7z            : $($sLog7zName)" $($sLogFile)
+ShowLogMessage "AUTRES" "Nombre de sauvegarde max : $([math]::abs($iKeep))" $($sLogFile)
+ShowLogMessage "AUTRES" "" $($sLogFile)
 
 #Archivage du dossier
 If (-not($Test)) {
@@ -593,7 +596,7 @@ If (-not($Test)) {
 
     If ($Verbeux) {
         ShowLogMessage "DEBUG" "Suppression ancienne archive :" $($sLogFile)
-        ShowLogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"
+        ShowLogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"  $($sLogFile)
         ShowLogMessage "AUTRES" "" $($sLogFile)
     }
 
