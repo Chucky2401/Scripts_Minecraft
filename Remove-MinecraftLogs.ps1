@@ -1,42 +1,42 @@
 <#
 .SYNOPSIS
-    Sauvegarde instance Minecraft
+    Supprime les logs Minecraft
 .DESCRIPTION
-    Ce script s'occupe de sauvegarder une instance Minecraft sous format 7z
+    Ce script s'occupe de supprimer les plus vieux logs de Minecraft
 .PARAMETER NomDeLInstance
     Nom de l'instance à sauvegarde pour le nom de l'archive
-.PARAMETER CheminDeLInstance
-    Chemin vers le dossier de l'instance
+.PARAMETER CheminMinecraft
+    Chemin vers le dossier '.minecraft' de l'instance
 .PARAMETER Verbeux
     Booléen pour afficher les messages de DEBUG
 .PARAMETER Test
     Si on lance en mode test (rien n'est fait)
 .NOTES
-    Nom            : Backup-Minecraft
-    Version        : 1.4.1
+    Nom            : Remove-MinecraftLogs
+    Version        : 1.0
     Créé par       : Chucky2401
-    Date Création  : 25/01/2020
+    Date Création  : 24/04/2021
     Modifié par    : Chucky2401
-    Date modifié   : 22/04/2021
-    Changement     : Modification de quelques messages
+    Date modifié   : 24/04/2021
+    Changement     : Création
 .EXAMPLE
-    .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC
+    .\Remove-MinecraftLogs.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC/.minecraft
     
-    Sauvegarde l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC'
+    Supprime les logs de l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC\.minecraft\logs'
 .EXAMPLE
-    .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC -Verbeux
+    .\Remove-MinecraftLogs.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC/.minecraft -Verbeux
 
-    Sauvegarde l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC' et affiche les messages de debug
+    Supprime les logs de l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC\.minecraft\logs' et affiche les messages de debug
 .EXAMPLE
-    .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC -Test
+    .\Remove-MinecraftLogs.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC/.minecraft -Test
 
-    Sauvegarde l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC' en mode test.
-    /!\ Aucun fichier de sauvegarde n'est créé et le fichier de log sera nommé 'TEST.log'
+    Test la suppression des logs de l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC\.minecraft\logs'.
+    /!\ Aucun fichier de logs n'est supprimés 'TEST.log'
 .EXAMPLE
-    .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC -Test -Verbeux
+    .\Remove-MinecraftLogs.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC/.minecraft -Test -Verbeux
 
-    Sauvegarde l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC' en mode test et avec debug
-    /!\ Aucun fichier de sauvegarde n'est créé, le fichier de log sera nommé 'TEST.log' et les commandes normalemment exécuté sont affiché à l'écran
+    Test la suppression des logs de l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC\.minecraft\logs' avec les messages debug
+    /!\ Aucun fichier de logs n'est supprimés 'TEST.log', le fichier de log sera nommé 'TEST.log' et les commandes normalemment exécuté sont affiché à l'écran
 #>
 
 #---------------------------------------------------------[Script Parameters]------------------------------------------------------
@@ -48,7 +48,7 @@ Param (
     [string]$NomDeLInstance,
     [Parameter(Mandatory = $true)]
     [Alias("c")]
-    [string]$CheminDeLInstance,
+    [string]$CheminMinecraft,
     [Parameter(Mandatory = $false)]
     [Alias("d")]
     [switch]$Verbeux,
@@ -65,7 +65,7 @@ If (-not($Verbeux)) {
 }
 
 #Windows ISO
-$CheminDeLInstance = $CheminDeLInstance -replace '/', '\'
+$CheminMinecraft = $CheminMinecraft -replace '/', '\'
 
 #-----------------------------------------------------------[Functions]------------------------------------------------------------
 
@@ -475,17 +475,10 @@ function MergeLogFile {
 ##         /!\ EDIT YOUR VARIABLES HERE /!\        ##
 ##                                                 ##
 #####################################################
-#Dossier de sauvegarde / Backup directory
-$sBackupPath           = "D:\Utilisateurs\TheBlackWizard\Jeux\Backup\Minecraft"
 #Dossier du log / Log directory
-$sLogPath              = "D:\Utilisateurs\TheBlackWizard\Jeux\Backup\Minecraft\Logs"
-#Nombre de jours de sauvegarde à conserver / How many backup to keep in days
+$sLogPath              = "D:\Utilisateurs\TheBlackWizard\Jeux\Minecraft\Logs"
+#Nombre de jour de logs à conserver / How many backup to keep
 $iKeep                 = 14
-#Taux de compression / Compression ratio
-#Valeurs possibles / Available values : Aucune (None) / Plus rapide (Faster) / Rapide (Fastest) / Normal (Normal) / Maximum (Best) / Ultra (Ultra)
-$sTauxCompression      = "Ultra"
-
-
 
 ####################################################
 ##                                                ##
@@ -496,36 +489,19 @@ $sTauxCompression      = "Ultra"
 $dMaxKeep              = $(Get-Date).AddDays(-$iKeep)
 #Date du jour
 $sDate                 = Get-Date -UFormat "%Y.%m.%d"
-$sHour                 = Get-Date -UFormat "%H"
 $sHourMinute           = Get-Date -UFormat "%H.%M"
-
-#Archive information
-$sArchiveName          = "$($NomDeLInstance)-$($sDate)_$($sHour).00.7z"
-$sArchiveFile          = Join-Path -Path $sBackupPath -ChildPath $sArchiveName
 
 #Log File Info
 $sLogName              = If (-not $Test) {"$($NomDeLInstance)-$($sDate)_$($sHourMinute).log"} Else {"TEST.log"}
-$sLog7zName            = "SevenZip.log"
 $sLogFile              = Join-Path -Path $sLogPath -ChildPath $sLogName
-$sLog7zFile            = Join-Path -Path $sLogPath -ChildPath $sLog7zName
 
-#7z executable info
-$a7zCompressionValue   = @{
-    "Aucune"      = 0;
-    "Plus rapide" = 1;
-    "Rapide"      = 3;
-    "Normal"      = 5;
-    "Maximum"     = 7;
-    "Ultra"       = 9;
-}
+#Chemin Minecraft
+$aCheminMinecraft      = $CheminMinecraft.Split('\')
+$iLongueurArrayChemin  = $aCheminMinecraft.Length
+$sDerniereValeur       = $aCheminMinecraft[$iLongueurArrayChemin-1]
 
-$iTauxCompression      = If ( -not $a7zCompressionValue[$sTauxCompression]) {$a7zCompressionValue["Normal"]} Else {$a7zCompressionValue[$sTauxCompression]}
-$s7zPath               = "D:\Utilisateurs\TheBlackWizard\Logiciels\Apps_PS\#Git\backup_minecraft"
-$s7zName               = "7z.exe"
-$s7zCommand            = "a"
-$s7zSwitches           = "-bb -bt -mx$($iTauxCompression) -r -t7z"
-$s7zFile               = Join-Path -Path $s7zPath -ChildPath $s7zName
-
+#Booléen
+$bCheminMinecraftOk    = $True
 
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
 
@@ -534,8 +510,8 @@ If ($Verbeux) { Clear-Host }
 #En-tête
 Write-CenterText -sChaine "****************************************" -sLogFile $($sLogFile)
 Write-CenterText -sChaine "*                                      *" -sLogFile $($sLogFile)
-Write-CenterText -sChaine "*  Sauvegarde de l'instance Minecraft  *" -sLogFile $($sLogFile)
-Write-CenterText -sChaine "*       Sauvegarde du $(Get-Date -UFormat "%d/%m/%Y")       *" -sLogFile $($sLogFile)
+Write-CenterText -sChaine "*     Suppression de log Minecraft     *" -sLogFile $($sLogFile)
+Write-CenterText -sChaine "*       Suppression du $(Get-Date -UFormat "%d/%m/%Y")      *" -sLogFile $($sLogFile)
 Write-CenterText -sChaine "*           Début à $(Get-Date -UFormat "%Hh%Mm%Ss")          *" -sLogFile $($sLogFile)
 Write-CenterText -sChaine "*                                      *" -sLogFile $($sLogFile)
 Write-CenterText -sChaine "****************************************" -sLogFile $($sLogFile)
@@ -543,107 +519,82 @@ ShowLogMessage "AUTRES" "" $($sLogFile)
 
 ShowLogMessage "AUTRES" "Variables de la session en cours :" $($sLogFile)
 ShowLogMessage "AUTRES" "Nom de l'instance        : $($NomDeLInstance)" $($sLogFile)
-ShowLogMessage "AUTRES" "Chemin de l'instance     : $($CheminDeLInstance)" $($sLogFile)
-ShowLogMessage "AUTRES" "Dossier de Sauvegarde    : $($sBackupPath)" $($sLogFile)
-ShowLogMessage "AUTRES" "Nom de l'archive         : $($sArchiveName)" $($sLogFile)
-ShowLogMessage "AUTRES" "Taux de compression      : $($sTauxCompression) ($($iTauxCompression))" $($sLogFile)
+ShowLogMessage "AUTRES" "Chemin de Minecraft      : $($CheminMinecraft)" $($sLogFile)
 ShowLogMessage "AUTRES" "Chemin des logs          : $($sLogPath)" $($sLogFile)
 ShowLogMessage "AUTRES" "Nom du log               : $($sLogName)" $($sLogFile)
-ShowLogMessage "AUTRES" "Nom du log 7z            : $($sLog7zName)" $($sLogFile)
-ShowLogMessage "AUTRES" "Nombre de sauvegarde max : $([math]::abs($iKeep))" $($sLogFile)
+ShowLogMessage "AUTRES" "Nombre de logs max       : $([math]::abs($iKeep))" $($sLogFile)
 ShowLogMessage "AUTRES" "" $($sLogFile)
 
-#Archivage du dossier
-If (-not($Test)) {
-    ShowLogMessage "INFO" "Démarrage Sauvegarde..." $($sLogFile)
-
+#Vérification chemin Minecraft
+If ($sDerniereValeur -ne ".minecraft") {
+    ShowLogMessage "ERROR" "Vous n'avez pas fournis un chemin vers le .minecraft !" $($sLogFile)
     If ($Verbeux) {
-        ShowLogMessage "DEBUG" "Start-Process :" $($sLogFile)
-        ShowLogMessage "DEBUG" "          $($s7zFile)" $($sLogFile)
-        ShowLogMessage "DEBUG" "          $($s7zCommand) $($s7zSwitches) ""$($sArchiveFile)"" ""$($CheminDeLInstance)""" $($sLogFile)
-        ShowLogMessage "DEBUG" "          $($sLog7zFile)" $($sLogFile)
-        ShowLogMessage "AUTRES" "" $($sLogFile)
+        ShowLogMessage "DEBUG" "Chemin : $($CheminMinecraft)" $($sLogFile)
+        ShowLogMessage "DEBUG" "Dernière valeur : $($sDerniereValeur)" $($sLogFile)
     }
-
-    Start-Process -FilePath $s7zFile -ArgumentList "$($s7zCommand) $($s7zSwitches) ""$($sArchiveFile)"" ""$($CheminDeLInstance)""" -RedirectStandardOutput $sLog7zFile -WindowStyle Hidden -Wait
-
-    If ($?) {
-        ShowLogMessage "SUCCESS" "Sauvegarde réussi !" $($sLogFile)
-    } Else {
-        ShowLogMessage "ERROR" "Sauvegarde échoué !" $($sLogFile)
-    }
-
-    ShowLogMessage "INFO" "Log 7z à la fin de ce log" $($sLogFile)
-    ShowLogMessage "AUTRES" "" $($sLogFile)
+    ShowLogMessage "ERROR" "Veuillez fournir un chemin poitant sur .minecraft" $($sLogFile)
+    ShowLogMessage "INFO" "Exemple : 'F:/Games/Minecraft/MultiMC/instances/GoC/.minecraft'" $($sLogFile)
+    $bCheminMinecraftOk = $False
 } Else {
-    ShowLogMessage "INFO" "{MODE TEST} Aucune sauvegarde ne sera effectué" $($sLogFile)
-    ShowLogMessage "WARNING" "{MODE TEST} Activé le mode {DEBUG} pour plus de détail en mode test" $($sLogFile)
-    ShowLogMessage "AUTRES" "" $($sLogFile)
-
-    If ($Verbeux) {
-        ShowLogMessage "DEBUG" "Start-Process :"  $($sLogFile)
-        ShowLogMessage "DEBUG" "          $($s7zFile)"  $($sLogFile)
-        ShowLogMessage "DEBUG" "          $($s7zCommand) $($s7zSwitches) ""$($sArchiveFile)"" ""$($CheminDeLInstance)"""  $($sLogFile)
-        ShowLogMessage "DEBUG" "          $($sLog7zFile)"  $($sLogFile)
-        ShowLogMessage "AUTRES" ""  $($sLogFile)
-    }
+    $CheminMinecraft += "\logs"
 }
 
-#Suppression des fichiers plus vieux...
-#... et des logs !
-If (-not($Test)) {
-    ShowLogMessage "INFO" "Suppression des anciens fichiers..." $($sLogFile)
+If ($bCheminMinecraftOk) {
+    #Suppression des fichiers plus vieux...
+    #... et des logs !
+    If (-not($Test)) {
+        ShowLogMessage "INFO" "Suppression des anciens logs Minecraft..." $($sLogFile)
 
-    If ($Verbeux) {
-        ShowLogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | Where-Object {-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"  $($sLogFile)
+        If ($Verbeux) {
+            ShowLogMessage "DEBUG" "          Get-ChildItem $($CheminMinecraft) | Where-Object {-not $_.PsIsContainer -and $_.Name -Match "".log.gz"" -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force"  $($sLogFile)
+            ShowLogMessage "AUTRES" "" $($sLogFile)
+        }
+
+        Get-ChildItem $($CheminMinecraft) | Where-Object {-not $_.PsIsContainer -and $_.Name -Match ".log.gz" -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force
+
+        If ($?) {
+            ShowLogMessage "SUCCESS" "Suppression des anciens fichiers de logs Minecraft réussi !" $($sLogFile)
+        } Else {
+            ShowLogMessage "ERROR" "Suppression des anciens fichiers de logs Minecraft échoué !" $($sLogFile)
+        }
         ShowLogMessage "AUTRES" "" $($sLogFile)
-    }
 
-    Get-ChildItem $sBackupPath | Where-Object {-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force
+        ShowLogMessage "INFO" "Suppression des anciens logs..." $($sLogFile)
 
-    If ($?) {
-        ShowLogMessage "SUCCESS" "Suppression des anciens fichiers réussi !" $($sLogFile)
+        If ($Verbeux) {
+            ShowLogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | Where-Object {-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force" $($sLogFile)
+            ShowLogMessage "AUTRES" "" $($sLogFile)
+        }
+
+        Get-ChildItem $($sLogPath) | Where-Object {-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force
+
+        If ($?) {
+            ShowLogMessage "SUCCESS" "Suppression des anciens logs réussi !" $($sLogFile)
+        } Else {
+            ShowLogMessage "ERROR" "Suppression des anciens logs échoué !" $($sLogFile)
+        }
+        ShowLogMessage "AUTRES" "" $($sLogFile)
+        
     } Else {
-        ShowLogMessage "ERROR" "Suppression des anciens fichiers échoué !" $($sLogFile)
-    }
-    ShowLogMessage "AUTRES" "" $($sLogFile)
-
-    ShowLogMessage "INFO" "Suppression des anciens logs..." $($sLogFile)
-
-    If ($Verbeux) {
-        ShowLogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | Where-Object {-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force" $($sLogFile)
+        ShowLogMessage "INFO" "{MODE TEST} Aucune suppression ne sera effectué" $($sLogFile)
+        ShowLogMessage "WARNING" "{MODE TEST} Activé le mode {DEBUG} pour plus de détail en mode test" $($sLogFile)
         ShowLogMessage "AUTRES" "" $($sLogFile)
-    }
 
-    Get-ChildItem $sLogPath | Where-Object {-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force
-
-    If ($?) {
-        ShowLogMessage "SUCCESS" "Suppression des anciens logs réussi !" $($sLogFile)
-    } Else {
-        ShowLogMessage "ERROR" "Suppression des anciens logs échoué !" $($sLogFile)
-    }
-    ShowLogMessage "AUTRES" "" $($sLogFile)
-    
-} Else {
-    ShowLogMessage "INFO" "{MODE TEST} Aucune suppression ne sera effectué" $($sLogFile)
-    ShowLogMessage "WARNING" "{MODE TEST} Activé le mode {DEBUG} pour plus de détail en mode test" $($sLogFile)
-    ShowLogMessage "AUTRES" "" $($sLogFile)
-
-    If ($Verbeux) {
-        ShowLogMessage "DEBUG" "Suppression anciennes archives (Get-ChildItem) :" $($sLogFile)
-        ShowLogMessage "DEBUG" "          Get-ChildItem $($sBackupPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force" $($sLogFile)
-        ShowLogMessage "DEBUG" "Suppression anciens logs (Get-ChildItem) :" $($sLogFile)
-        ShowLogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | ?{-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force" $($sLogFile)
-        ShowLogMessage "AUTRES" "" $($sLogFile)
+        If ($Verbeux) {
+            ShowLogMessage "DEBUG" "Suppression des anciens logs Minecraft (Get-ChildItem) :" $($sLogFile)
+            ShowLogMessage "DEBUG" "          Get-ChildItem $($CheminMinecraft) | Where-Object {-not $_.PsIsContainer -and $_.Name -Match "".log.gz"" -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force" $($sLogFile)
+            ShowLogMessage "DEBUG" "Suppression anciens logs (Get-ChildItem) :" $($sLogFile)
+            ShowLogMessage "DEBUG" "          Get-ChildItem $($sLogPath) | Where-Object {-not $_.PsIsContainer -and $_.Name -Match $($NomDeLInstance) -and $_.CreationTime -le $($dMaxKeep)} | Remove-Item -Force" $($sLogFile)
+            ShowLogMessage "AUTRES" "" $($sLogFile)
+        }
     }
 }
-
 
 #Pied de page
 Write-CenterText -sChaine "****************************************" -sLogFile $($sLogFile)
 Write-CenterText -sChaine "*                                      *" -sLogFile $($sLogFile)
-Write-CenterText -sChaine "*  Sauvegarde de l'instance Minecraft  *" -sLogFile $($sLogFile)
-Write-CenterText -sChaine "*       Sauvegarde du $(Get-Date -UFormat "%d/%m/%Y")       *" -sLogFile $($sLogFile)
+Write-CenterText -sChaine "*     Suppression de log Minecraft     *" -sLogFile $($sLogFile)
+Write-CenterText -sChaine "*       Suppression du $(Get-Date -UFormat "%d/%m/%Y")      *" -sLogFile $($sLogFile)
 Write-CenterText -sChaine "*            Fin a $(Get-Date -UFormat "%Hh%Mm%Ss")           *" -sLogFile $($sLogFile)
 Write-CenterText -sChaine "*                                      *" -sLogFile $($sLogFile)
 Write-CenterText -sChaine "****************************************" -sLogFile $($sLogFile)
