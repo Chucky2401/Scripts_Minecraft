@@ -1,4 +1,4 @@
-# Script Minecraft
+# Scripts Minecraft
 
 - [Script Minecraft](#script-minecraft)
   - [Backup Minecraft](#backup-minecraft)
