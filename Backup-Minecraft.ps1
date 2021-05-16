@@ -469,7 +469,7 @@ function MergeLogFile {
 #----------------------------------------------------------[Declarations]----------------------------------------------------------
 
 ## Variables Utilisateur
-. "$PSScriptRoot\backup-config.ini"
+. "$PSScriptRoot\backup-config.ps1"
 
 ####################################################
 ##                                                ##

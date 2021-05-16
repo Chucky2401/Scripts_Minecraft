@@ -469,7 +469,7 @@ function MergeLogFile {
 #----------------------------------------------------------[Declarations]----------------------------------------------------------
 
 ## Variables Utilisateur
-. "$PSScriptRoot\removeLogs-config.ini"
+. "$PSScriptRoot\removeLogs-config.ps1"
 
 ####################################################
 ##                                                ##
