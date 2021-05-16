@@ -13,12 +13,12 @@
     Si on lance en mode test (rien n'est fait)
 .NOTES
     Nom            : Remove-MinecraftLogs
-    Version        : 1.0
+    Version        : 1.1.0
     Créé par       : Chucky2401
     Date Création  : 24/04/2021
     Modifié par    : Chucky2401
-    Date modifié   : 24/04/2021
-    Changement     : Création
+    Date modifié   : 16/05/2021
+    Changement     : Variables utilisateurs dans un fichier à part
 .EXAMPLE
     .\Remove-MinecraftLogs.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC/.minecraft
     
@@ -468,22 +468,12 @@ function MergeLogFile {
 
 #----------------------------------------------------------[Declarations]----------------------------------------------------------
 
-## Variables Utilisateur / User variables
-#####################################################
-##                                                 ##
-##     /!\ MODIFIER LES VALEURS CI-DESSOUS /!\     ##
-##         /!\ EDIT YOUR VARIABLES HERE /!\        ##
-##                                                 ##
-#####################################################
-#Dossier du log / Log directory
-$sLogPath              = "D:\Utilisateurs\TheBlackWizard\Jeux\Minecraft\Logs"
-#Nombre de jour de logs à conserver / How many backup to keep
-$iKeep                 = 14
+## Variables Utilisateur
+. "$PSScriptRoot\removeLogs-config.ini"
 
 ####################################################
 ##                                                ##
 ## /!\ NE PAS MODIFIER LES VALEURS CI-DESSOUS /!\ ##
-##            /!\ DO NOT EDIT BELOW /!\           ##
 ##                                                ##
 ####################################################
 $dMaxKeep              = $(Get-Date).AddDays(-$iKeep)

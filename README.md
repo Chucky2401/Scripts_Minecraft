@@ -1,25 +1,18 @@
 # Scripts Minecraft
 
-- [Script Minecraft](#script-minecraft)
+- [Scripts Minecraft](#scripts-minecraft)
   - [Backup Minecraft](#backup-minecraft)
-    - [VERSION FRANÇAISE](#version-française)
-      - [Détail](#détail)
-      - [Configuration](#configuration)
-    - [ENGLISH VERSION](#english-version)
-      - [Detailed](#detailed)
-      - [Configuration](#configuration-1)
+    - [Détail](#détail)
+    - [Configuration](#configuration)
   - [Remove Minecraft logs](#remove-minecraft-logs)
-    - [VERSION FRANÇAISE](#version-française-1)
-      - [Détail](#détail-1)
-      - [Configuration](#configuration-2)
+    - [Détail](#détail-1)
+    - [Configuration](#configuration-1)
 
 ## Backup Minecraft
 
-### VERSION FRANÇAISE
-
 Script PowerShell pour sauvegarder une instance Minecraft de MultiMC, avec l'utilisation des commandes d'arrêt
 
-#### Détail
+### Détail
 
     .SYNOPSIS
         Sauvegarde instance Minecraft
@@ -60,9 +53,9 @@ Script PowerShell pour sauvegarder une instance Minecraft de MultiMC, avec l'uti
         Sauvegarde l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC' en mode test et avec debug
         /!\ Aucun fichier de sauvegarde n'est créé, le fichier de log sera nommé 'TEST.log' et les commandes normalemment exécuté sont affiché à l'écran
 
-#### Configuration
+### Configuration
 
-Dans le script, de la ligne **478** à **486**, il y a 4 variables à modifier :
+Dans le fichier `backup-config.ini`, il y a 4 variables à modifier :
 
 - **$sBackupPath** : Est le dossier où sera stocker les sauvegardes
 - **$sLogPath** : Est le dossier où sera stocker les logs de la sauvegarde
@@ -75,73 +68,9 @@ Dans le script, de la ligne **478** à **486**, il y a 4 variables à modifier :
   - Maximum
   - Ultra
 
----
-
-### ENGLISH VERSION
-
-Script PowerShell to backup Minecraft instance of MultiMC with use of post-stop command.
-
-#### Detailed
-
-    .SYNOPSIS
-        Backup Minecraft instance
-    .DESCRIPTION
-        This script backup a Minecraft instance in a 7z archive
-    .PARAMETER NomDeLInstance
-        Instance name. Used for the archive name, too
-    .PARAMETER CheminDeLInstance
-        Instance path
-    .PARAMETER Verbeux
-        Switch, enable verbose message
-    .PARAMETER Test
-        Switch, test mode (nothing do)
-    .NOTES
-        Name           : Backup-Minecraft
-        Version        : 1.4.1
-        Created by     : Chucky2401
-        Date Created   : 25/01/2020
-        Modified by    : Chucky2401
-        Date modified  : 22/04/2021
-        Last change    : Modification variables message at the beginning
-    .EXAMPLE
-        .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC
-        
-        Backup instance 'GoC_Multi' from 'F:\Games\Minecraft\MultiMC\instances\GoC'
-    .EXAMPLE
-        .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC -Verbeux
-
-        Backup instance 'GoC_Multi' from 'F:\Games\Minecraft\MultiMC\instances\GoC' and display debug message
-    .EXAMPLE
-        .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC -Test
-
-        Backup instance 'GoC_Multi' from 'F:\Games\Minecraft\MultiMC\instances\GoC' in test mode.
-        /!\ No backup file will be created and log file will be named 'TEST.log'
-    .EXAMPLE
-        .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC -Test -Verbeux
-
-        Backup instance 'GoC_Multi' from 'F:\Games\Minecraft\MultiMC\instances\GoC' in test mode and display debug message
-        /!\ No backup file will be created, log file will be named 'TEST.log' and cmdlets use to backup will be displayed.
-
-#### Configuration
-
-In the script, From line **478** to **486**, there are 4 variables to modify :
-
-- **$sBackupPath** : Folder where the backups will be store
-- **$sLogPath** : Folder where the logs file will be store
-- **$iKeep** : Number of backup you want to keep in days
-- **$sTauxCompression** : Ratio rate to use. Higher ratio take more time, but the archive will be small. Here the ratio rate available (in french, english translation between parenthesis) :
-  - Aucune (None)
-  - Plus rapide (Faster)
-  - Rapide (Fastest)
-  - Normal (Normal)
-  - Maximum (Best)
-  - Ultra (Ultra)
-
 ## Remove Minecraft logs
 
-### VERSION FRANÇAISE
-
-#### Détail
+### Détail
 
     .SYNOPSIS
         Supprime les logs Minecraft
@@ -180,11 +109,11 @@ In the script, From line **478** to **486**, there are 4 variables to modify :
         .\Remove-MinecraftLogs.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC/.minecraft -Test -Verbeux
 
         Test la suppression des logs de l'instance 'GoC_Multi' situé dans 'F:\Games\Minecraft\MultiMC\instances\GoC\.minecraft\logs' avec les messages debug
-        /!\ Aucun fichier de logs n'est supprimés 'TEST.log', le fichier de log sera nommé 'TEST.log' et les commandes normalemment exécuté sont affiché à l'écran
+        /!\ Aucun fichier de logs n'est supprimés 'TEST.log', le fichier de log sera nommé 'TEST.log' et les commandes normalement exécuté sont affiché à l'écran
 
-#### Configuration
+### Configuration
 
-Dans le script, de la ligne **478** à **481**, il y a 4 variables à modifier :
+Dans le fichier `removeLogs-config.ini`, il y a 2 variables à modifier :
 
 - **$sLogPath** : Est le dossier où sera stocker les logs de la sauvegarde
 - **$iKeep** : Nombre de sauvegarde que vous souhaitez conserver en nombre de jours

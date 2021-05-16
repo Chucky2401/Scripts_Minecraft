@@ -13,12 +13,12 @@
     Si on lance en mode test (rien n'est fait)
 .NOTES
     Nom            : Backup-Minecraft
-    Version        : 1.4.1
+    Version        : 1.5.0
     Créé par       : Chucky2401
     Date Création  : 25/01/2020
     Modifié par    : Chucky2401
-    Date modifié   : 22/04/2021
-    Changement     : Modification de quelques messages
+    Date modifié   : 16/05/2021
+    Changement     : Variables utilisateurs dans un fichier à part
 .EXAMPLE
     .\Backup-Minecraft.ps1 GoC_Multi F:/Games/Minecraft/MultiMC/instances/GoC
     
@@ -468,29 +468,12 @@ function MergeLogFile {
 
 #----------------------------------------------------------[Declarations]----------------------------------------------------------
 
-## Variables Utilisateur / User variables
-#####################################################
-##                                                 ##
-##     /!\ MODIFIER LES VALEURS CI-DESSOUS /!\     ##
-##         /!\ EDIT YOUR VARIABLES HERE /!\        ##
-##                                                 ##
-#####################################################
-#Dossier de sauvegarde / Backup directory
-$sBackupPath           = "D:\Utilisateurs\TheBlackWizard\Jeux\Backup\Minecraft"
-#Dossier du log / Log directory
-$sLogPath              = "D:\Utilisateurs\TheBlackWizard\Jeux\Backup\Minecraft\Logs"
-#Nombre de jours de sauvegarde à conserver / How many backup to keep in days
-$iKeep                 = 14
-#Taux de compression / Compression ratio
-#Valeurs possibles / Available values : Aucune (None) / Plus rapide (Faster) / Rapide (Fastest) / Normal (Normal) / Maximum (Best) / Ultra (Ultra)
-$sTauxCompression      = "Ultra"
-
-
+## Variables Utilisateur
+. "$PSScriptRoot\backup-config.ini"
 
 ####################################################
 ##                                                ##
 ## /!\ NE PAS MODIFIER LES VALEURS CI-DESSOUS /!\ ##
-##            /!\ DO NOT EDIT BELOW /!\           ##
 ##                                                ##
 ####################################################
 $dMaxKeep              = $(Get-Date).AddDays(-$iKeep)
